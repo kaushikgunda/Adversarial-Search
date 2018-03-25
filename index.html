@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body onload="setUpTangle();setUpTangle2()">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="Tangle.js"></script>
+	<link rel="stylesheet" href="TangleKit/TangleKit.css" type="text/css">
+	<script type="text/javascript" src="TangleKit/mootools.js"></script>
+	<script type="text/javascript" src="TangleKit/sprintf.js"></script>
+	<script type="text/javascript" src="TangleKit/BVTouchable.js"></script>
+	<script type="text/javascript" src="TangleKit/TangleKit.js"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<style type="text/css">
+		.glyphicon.glyphicon-one-fine-dot:before {
+			content: "\25cf";
+			font-size: 1em;
+			
+		}
+		.col-sm-1{
+			margin: 0px;
+			-moz-margin:0px;
+			padding: 0px;
+		}
+		
+		.border-right{
+			padding-top: 30px;
+			padding-bottom: 30px;
+
+			border-right:medium solid rgb(0,0,0,0.6);
+
+			-moz-border-radius: 0px;
+			-webkit-border-radius: 0px;
+		}
+		
+		.border-bottom{
+			padding-top: 30px;
+			padding-bottom: 30px;
+
+			border-bottom:  medium solid rgb(0,0,0,0.6);
+
+			-moz-border-radius: 0px;
+			-webkit-border-radius: 0px;
+
+		}
+		.half-op-blue{
+			color: lightblue;
+		}
+		.half-op-red{
+			color: #FA8072;
+		}
+		.blue{
+			color: blue;
+		}
+		.red{
+			color: red;
+		}
+		@media (min-width: 1200px) {
+			.container{
+				max-width: 600px;
+			}
+		}
+		.padding-0{
+			padding-right:0;
+			padding-left:0;
+		}
+		.glyphicon-win{
+			color:black;
+			text-shadow: 0 0 50px red;
+		}
+		.green{
+			color: green;
+		}
+
+	</style>
+	<div style="height: 100px;margin-left: 800px;margin-top: 50px;">
+		<p style="font-size: 40px;opacity: 0.5"> Adversarial Search </p>
+	</div>
+	<div style="margin-left: 200px">
+		<p style="font-size: 30px;opacity: 0.5"> Introduction </p>
+		<p style="font-size: 20px;display: block;margin-right: 200px">Ever heard of computer bots playing against humans in games? You must have, they are the trend of the modern age.Did you ever challenge them? 
+			Let’s play a simple tic-tac-toe game.Have a try and see if you can win.
+		</p>
+	</div>
+	<div id="tic-tac-toe">
+		<div class="container-fluid" id="whofirst" >
+			<p style="margin-left:750px;font-size: 25px;opacity: 0.8;float: left"> Who will play first ? </p>
+			<canvas id="stillApe" width="100px" height="100px" style="float: left" ></canvas>
+			<p style="font-size: 25px;opacity: 0.8;float: left"> or </p>
+			<canvas id="stillRobo" width="100px" height="100px" style="float:left" ></canvas>
+		</div>
+		<div  style="margin-left:300px;margin-right: 200px">
+			<div style="float:left;height: 200px;width: 300px;">
+				<canvas id="Animation-ape" width="100px" height="100px"  style="padding-top:100px;padding-left: 100px"></canvas>
+				<p style="padding-left: 120px;font-size: 20px" > You </p>
+				<span class="glyphicon glyphicon-remove blue" style="font-size: 28px;position: relative;padding-left: 120px" ></span>
+			</div>
+			<div class="container" style="float:left;margin-left: 200px">
+
+				<div class="row text-center"  >
+					<div class="col-sm-2 padding-0"  id="div-1">
+						<div class="border-bottom border-right" style=" min-height: 93px;" >
+							<span class="glyphicon glyphicon-remove helf-op" style="font-size: 28px;position: relative;display: none;" id="1" "></span>
+						</div>	
+					</div>
+					<div class="col-sm-2 padding-0" id="div-2">
+
+						<div class="border-bottom border-right" style=" min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="2" "></span>
+						</div>	
+					</div>
+					<div class="col-sm-2 padding-0" id="div-3">
+						<div class="border-bottom" style=" min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="3" "></span>
+						</div>	
+					</div>
+				</div>
+				<div class="row text-center">
+					<div class="col-sm-2 padding-0" id="div-4" >
+						<div class="border-right border-bottom" style=" min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="4" "></span>
+						</div>	
+					</div>
+					<div class="col-sm-2 padding-0" id="div-5">
+						<div class="border-right border-bottom" style=" min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="5" "></span>
+						</div>	
+					</div>
+					<div class="col-sm-2 padding-0" id="div-6">
+						<div class="border-bottom" style=" min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="6" "></span>
+						</div>	
+					</div>
+				</div>
+				<div class="row text-center">
+					<div class="col-sm-2 padding-0	"  id="div-7">
+						<div class="border-right" style=" min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="7" "></span>
+
+						</div>	
+					</div>
+					<div class="col-sm-2 padding-0" id="div-8">
+						<div class="border-right " style=" min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="8" "></span>
+
+						</div>	
+					</div>
+					<div class="col-sm-2 padding-0"  id="div-9">
+						<div style="padding-top:30px;min-height: 93px" >
+							<span class="glyphicon glyphicon-remove" style="font-size: 28px;position: relative;display: none;" id="9"></span>
+						</div>	
+					</div>
+				</div>
+			</div>
+
+			<div style="float:left;height: 200px;width: 300px;">
+				<canvas id="Animation-robo" width="100px" height="100px"  style="padding-top:100px;padding-left: 100px"></canvas>
+				<p style="padding-left: 120px;font-size: 20px" > Bot </p>
+				<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;padding-left: 120px" ></span>
+			</div>
+		</div>
+		<div style="clear: both;margin-left:800px"><span style="font-size:200%;opacity: 0.5"> Status:</span> <span style="font-size:200%;" id="status"></span></div>
+		<br></br>
+		<div style="clear: both;margin-left: 860px"><button onclick="playagain()"> Play Again? </button></div>
+
+	</div>
+	<script type="text/javascript">
+		
+		chance=-1;
+		var clicked=new Array();
+		for(i=0;i<9;i++)
+			clicked[i]= - 1;
+
+		$(function() {
+
+
+
+			$("#div-1").hover(function() {
+
+				if(clicked[0]==-1 && gameover==0 && chance!=-1)
+				{
+					
+					if(chance==0)
+						$(this).find("#1").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#1").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+
+					$(this).find("#1").toggle();
+
+				}
+			});
+
+			$("#div-2").hover(function() {
+
+				if(clicked[1]==-1 && gameover==0 && chance!=-1)
+				{
+					
+					if(chance==0)
+						$(this).find("#2").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#2").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#2").toggle();
+				}
+			});
+
+			$("#div-3").hover(function() {
+
+				if(clicked[2]==-1 && gameover==0 && chance!=-1)
+				{
+					
+					if(chance==0)
+						$(this).find("#3").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#3").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#3").toggle();
+				}
+			});
+			$("#div-4").hover(function() {
+
+				if(clicked[3]==-1 && gameover==0 && chance!=-1)
+				{
+					
+					if(chance==0)
+						$(this).find("#4").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#4").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#4").toggle();
+				}
+			});
+
+			$("#div-5").hover(function() {
+
+				if(clicked[4]==-1 && gameover==0 && chance!=-1)
+				{
+					
+					if(chance==0)
+						$(this).find("#5").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#5").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#5").toggle();
+				}
+			});
+
+			$("#div-6").hover(function() {
+
+				if(clicked[5]==-1 && gameover==0 && chance!=-1)
+				{
+					
+					if(chance==0)
+						$(this).find("#6").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#6").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#6").toggle();
+				}
+			});
+			$("#div-7").hover(function() {
+
+				if(clicked[6]==-1 && gameover==0 && chance!=-1)
+				{
+					if(chance==0)
+						$(this).find("#7").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#7").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#7").toggle();
+				}
+			});
+
+			$("#div-8").hover(function() {
+
+				if(clicked[7]==-1 && gameover==0 && chance!=-1)
+				{
+					if(chance==0)
+						$(this).find("#8").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#8").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#8").toggle();
+				}
+			});
+
+			$("#div-9").hover(function() {
+
+				if(clicked[8]==-1 && gameover==0 && chance!=-1)
+				{
+
+					if(chance==0)
+						$(this).find("#9").attr('class','glyphicon glyphicon-remove half-op-blue');
+					else
+						$(this).find("#9").attr('class','glyphicon glyphicon-one-fine-dot half-op-red');
+					$(this).find("#9").toggle();
+				}
+			});
+
+
+		});
+
+		gameover=0;
+		count=0;
+		start=0;
+
+		$(function() {
+
+			$("#div-1").click(function() {
+				if(clicked[0]==-1)
+				{
+
+					if(chance==0)
+					{
+						$(this).find("#1").attr('class','glyphicon glyphicon-remove blue');
+						chance=1;
+						clicked[0]=1;
+					}
+					else if (chance==1)
+					{
+						console.log("I know you did it.")
+					}
+					
+					
+					if(chance!=-1)
+						{ count+=1;
+							$(this).find("#1").show();
+						}
+
+					}
+				});
+			$("#div-2").click(function() {
+				if(clicked[1]==-1)
+				{
+					if(chance==0)
+					{
+						$(this).find("#2").attr('class','glyphicon glyphicon-remove blue');
+						chance=1;
+						clicked[1]=1;
+					}
+					
+					
+					if(chance!=-1){
+						$(this).find("#2").show();
+						count+=1; 
+					}
+				}
+			});
+			$("#div-3").click(function() {
+				if(clicked[2]==-1)
+				{
+					if(chance==0)
+					{
+						$(this).find("#3").attr('class','glyphicon glyphicon-remove blue');
+						chance=1;
+						clicked[2]=1;
+					}
+					
+					
+					if(chance!=-1){
+						$(this).find("#3").show();
+						count+=1;
+					}
+				}
+			});
+			$("#div-4").click(function() {
+				if(clicked[3]==-1)
+				{
+					if(chance==0)
+					{
+						$(this).find("#4").attr('class','glyphicon glyphicon-remove  blue');
+						chance=1;
+						clicked[3]=1;
+					}
+					
+					if(chance!=-1){
+						$(this).find("#4").show();count+=1;}
+					}
+				});
+			$("#div-5").click(function() {
+				if(clicked[4]==-1)
+				{
+					if(chance==0)
+					{
+						$(this).find("#5").attr('class','glyphicon glyphicon-remove blue');
+						chance=1;
+						clicked[4]=1;
+					}
+					
+					
+					if(chance!=-1){
+						$(this).find("#5").show();count+=1;}
+
+					}
+				});
+			$("#div-6").click(function() {
+				if(clicked[5]==-1)
+				{
+					if(chance==0)
+					{
+						$(this).find("#6").attr('class','glyphicon glyphicon-remove blue');
+						chance=1;
+						clicked[5]=1;
+					}
+					
+					
+					if(chance!=-1){
+						$(this).find("#6").show();count+=1;}
+					}
+				});$("#div-7").click(function() {
+					if(clicked[6]==-1)
+					{
+						if(chance==0)
+						{
+							$(this).find("#7").attr('class','glyphicon glyphicon-remove blue');
+							chance=1;
+							clicked[6]=1;
+						}
+
+
+						if(chance!=-1){
+							$(this).find("#7").show();count+=1;}
+						}
+					});
+				$("#div-8").click(function() {
+					if(clicked[7]==-1)
+					{
+						if(chance==0)
+						{
+							$(this).find("#8").attr('class','glyphicon glyphicon-remove blue');
+							chance=1;
+							clicked[7]=1;
+						}
+
+						if(chance!=-1){					$(this).find("#8").show();count+=1;}
+
+					}
+				});
+				$("#div-9").click(function() {
+					if(clicked[8]==-1)
+					{
+						if(chance==0)
+						{
+							$(this).find("#9").attr('class','glyphicon glyphicon-remove blue');
+							chance=1;
+							clicked[8]=1;
+						}
+
+						if(chance!=-1){
+							$(this).find("#9").show();
+							count+=1;}
+						}
+					});
+				$(function(){
+
+					$("#div-1,#div-2,#div-3,#div-4,#div-5,#div-6,#div-7,#div-8,#div-9").click(function(){
+
+						if(chance==1 && gameover==0 && count!=9 && start==0)
+						{
+
+							
+						//Now try for minimax
+
+
+						availcount=0;
+						var available=[];
+						for(i=0;i<9;i++)
+						{
+							if(clicked[i]==-1)
+							{
+								availcount+=1;
+								available.push(i);
+							}
+						}
+						var go=gameoverfunc(clicked);
+						if(availcount>0 && go==-1)
+						{
+							var newx=clicked.slice(0);
+							chance=0;
+							count+=1;
+						pick=minmax(newx);//Go to this if there is atleast one available move otherwise waste.	
+						console.log(clicked);
+						console.log("done");
+						//Select one among the available clicks randomly.
+						//RANDOM BOT
+						
+						
+						clicked[pick]=2;
+						pick+=1;
+						$(("#div-"+pick.toString()).toString()).click();
+						console.log(("#div-"+pick.toString()).toString());
+						var go=gameoverfunc(clicked);
+						if(go==-10){
+							$(("#"+pick.toString()).toString()).attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+						}
+						else
+						{
+							$(("#"+pick.toString()).toString()).attr('class','glyphicon glyphicon-one-fine-dot red');
+						}
+						$(("#"+pick.toString()).toString()).show();
+					}
+
+				};
+				checkfun();
+			})
+
+				})
+
+			});
+
+minmax=function(a)
+{
+	
+	var temp=gameoverfunc(a);
+	if(temp!=-1)
+	{
+		return temp;
+	}
+	var best_move=-1;
+	var bestval=100;
+
+	for(var i=0;i<9;i++)
+	{
+		console.log(i);
+		if(a[i]== -1)
+		{
+			
+			var newArray=a.slice(0);
+			
+			newArray[i]=2;
+			var val = max(newArray.slice(0));
+			if(val<bestval)
+			{
+				bestval=val;
+				best_move=i;
+			}
+
+		}
+	}
+	return best_move;
+}
+max=function(a)
+{
+
+	var temp=gameoverfunc(a);
+	if(temp!=-1)
+	{
+		return temp;
+	}
+	
+	var best_move=-1;
+	var bestval=-100;
+	for(var i=0;i<9;i++)
+	{
+		if(a[i]==-1)
+		{
+			
+			var newArray=a.slice(0);
+			newArray[i]=1;
+			var val = min(newArray.slice(0));
+			if(val>bestval)
+			{
+				bestval=val;
+			}
+		}
+	}
+	return bestval;
+}
+min= function(a)
+{
+	
+	var temp=gameoverfunc(a);
+	if(temp!=-1)
+	{
+		return temp;
+	}
+	var best_move=-1;
+	var bestval=100;
+	for(var i=0;i<9;i++)
+	{
+		if(a[i]==-1)
+		{
+			
+			var newArray=a.slice(0);
+			newArray[i]=2;
+			val = max(newArray.slice(0));
+			if(val<bestval)
+			{
+				bestval=val;
+			}
+		}
+	}
+	return bestval;
+}
+gameoverfunc=function(a)
+{
+	if((a[0]==1 && a[1]==1 && a[2]==1)||(a[3]==1 && a[4]==1 && a[5]==1) || (a[6]==1 && a[7]==1 && a[8]==1) || ( a[0]==1 && a[3]==1 && a[6]==1) || (a[1]==1 && a[4]==1 && a[7]==1) || (a[2]==1 && a[5]==1 && a[8]==1) || (a[0]==1 && a[4]==1 && a[8]==1)||(a[2]==1 && a[4]==1 && a[6]==1))
+	{
+		return 	10;
+	}
+	else
+		if((a[0]==2 && a[1]==2 && a[2]==2)||(a[3]==2 && a[4]==2 && a[5]==2) || (a[6]==2 && a[7]==2 && a[8]==2) || ( a[0]==2 && a[3]==2 && a[6]==2) || (a[1]==2 && a[4]==2 && a[7]==2) || (a[2]==2 && a[5]==2 && a[8]==2) || (a[0]==2 && a[4]==2 && a[8]==2)||(a[2]==2 && a[4]==2 && a[6]==2))
+		{
+			return -10;
+		}
+		tempcount=0;
+		for(i=0;i<9;i++)
+		{
+			if(a[i]==-1);
+			{
+				tempcount+=1;
+			};
+		}
+		if(tempcount==0)
+		{
+			return 0;
+		}
+		else
+		{
+			return -1;
+		}
+
+	}
+	checkfun= function()
+	{
+
+
+		if(((clicked[0]==1 && clicked[1]==1 && clicked[2]==1) || (clicked[0]==2 && clicked[1]==2 && clicked[2]==2)) && gameover==0)
+		{
+
+			console.log("Win");
+			gameover=clicked[0];
+			if(gameover==1)
+			{
+				$("#1").attr('class','glyphicon glyphicon-remove glyphicon-win');
+				$("#2").attr('class','glyphicon glyphicon-remove glyphicon-win');
+				$("#3").attr('class','glyphicon glyphicon-remove glyphicon-win');
+			}
+			else
+			{
+				$("#1").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+				$("#2").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+				$("#3").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+			}
+
+			if(gameover==1)
+			{
+				console.log("hello");
+				$("#status").text("You Win");
+			}
+			else
+				if(gameover==2){
+					$("#status").text("Bot Wins");
+				}
+
+			}			
+			if(((clicked[3]==1 && clicked[4]==1 && clicked[5]==1) || (clicked[3]==2 && clicked[4]==2 && clicked[5]==2))&& gameover==0)
+			{
+
+				console.log("Win");
+				gameover=clicked[3];
+				if(gameover==1)
+				{
+					$("#4").attr('class','glyphicon glyphicon-remove glyphicon-win');
+					$("#5").attr('class','glyphicon glyphicon-remove glyphicon-win');
+					$("#6").attr('class','glyphicon glyphicon-remove glyphicon-win');
+				}
+				else
+				{
+					$("#4").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+					$("#5").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+					$("#6").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+				}
+
+
+
+				if(gameover==1)
+				{
+
+					$("#status").text("You Win");
+				}
+				else
+					if(gameover==2){
+						$("#status").text("Bot Wins");
+					}
+
+				}	
+
+				if(((clicked[6]==1 && clicked[7]==1 && clicked[8]==1) || (clicked[6]==2 && clicked[7]==2 && clicked[8]==2) )&& gameover==0)
+				{
+
+					console.log("Win");
+					gameover=clicked[6];
+					if(gameover==1)
+					{
+						$("#7").attr('class','glyphicon glyphicon-remove glyphicon-win');
+						$("#8").attr('class','glyphicon glyphicon-remove glyphicon-win');
+						$("#9").attr('class','glyphicon glyphicon-remove glyphicon-win');
+					}
+					else
+					{
+						$("#7").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+						$("#8").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+						$("#9").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+					}
+
+
+					if(gameover==1)
+					{
+						console.log("hello");
+						$("#status").text("You Win");
+					}
+					else
+						if(gameover==2){
+							$("#status").text("Bot Wins");
+						}
+					}			
+
+					if(((clicked[0]==1 && clicked[3]==1 && clicked[6]==1) || (clicked[0]==2 && clicked[3]==2 && clicked[6]==2) )&& gameover==0)
+					{
+
+						console.log("Win");
+						gameover=clicked[0];
+						if(gameover==1)
+						{
+							$("#1").attr('class','glyphicon glyphicon-remove glyphicon-win');
+							$("#4").attr('class','glyphicon glyphicon-remove glyphicon-win');
+							$("#7").attr('class','glyphicon glyphicon-remove glyphicon-win');
+						}
+						else
+						{
+							$("#1").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+							$("#4").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+							$("#7").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+						}
+
+
+						if(gameover==1)
+						{
+							console.log("hello");
+							$("#status").text("You Win");
+						}
+						else
+							if(gameover==2){
+								$("#status").text("Bot Wins");
+							}
+						}	
+
+						if(((clicked[1]==1 && clicked[4]==1 && clicked[7]==1) || (clicked[1]==2 && clicked[4]==2 && clicked[7]==2) )&& gameover==0)
+						{
+
+							console.log("Win");
+							gameover=clicked[1];
+							if(gameover==1)
+							{
+								$("#2").attr('class','glyphicon glyphicon-remove glyphicon-win');
+								$("#5").attr('class','glyphicon glyphicon-remove glyphicon-win');
+								$("#8").attr('class','glyphicon glyphicon-remove glyphicon-win');
+							}
+							else
+							{
+								$("#2").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+								$("#5").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+								$("#8").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+							}
+
+							if(gameover==1)
+							{
+								console.log("hello");
+								$("#status").text("You Win");
+							}
+							else
+								if(gameover==2){
+									$("#status").text("Bot Wins");
+								}
+							}	
+
+
+							if(((clicked[2]==1 && clicked[5]==1 && clicked[8]==1) || (clicked[2]==2 && clicked[5]==2 && clicked[8]==2)) && gameover==0)
+							{
+
+								console.log("Win");
+								gameover=clicked[2];
+								if(gameover==1)
+								{
+									$("#3").attr('class','glyphicon glyphicon-remove glyphicon-win');
+									$("#6").attr('class','glyphicon glyphicon-remove glyphicon-win');
+									$("#9").attr('class','glyphicon glyphicon-remove glyphicon-win');
+								}
+								else
+								{
+									$("#3").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+									$("#6").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+									$("#9").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+								}
+
+								if(gameover==1)
+								{
+									console.log("hello");
+									$("#status").text("You Win");
+								}
+								else
+									if(gameover==2){
+										$("#status").text("Bot Wins");
+									}
+								}
+
+								if(((clicked[0]==1 && clicked[4]==1 && clicked[8]==1) || (clicked[0]==2 && clicked[4]==2 && clicked[8]==2))&& gameover==0)
+								{
+
+									console.log("Win");
+									gameover=clicked[0];
+									if(gameover==1)
+									{
+										$("#1").attr('class','glyphicon glyphicon-remove glyphicon-win');
+										$("#5").attr('class','glyphicon glyphicon-remove glyphicon-win');
+										$("#9").attr('class','glyphicon glyphicon-remove glyphicon-win');
+									}
+									else
+									{
+										$("#1").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+										$("#5").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+										$("#9").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+									}
+
+									if(gameover==1)
+									{
+										console.log("hello");
+										$("#status").text("You Win");
+									}
+									else
+										if(gameover==2){
+											$("#status").text("Bot Wins");
+										}
+									}			
+
+									if(((clicked[2]==1 && clicked[4]==1 && clicked[6]==1) || (clicked[2]==2 && clicked[4]==2 && clicked[6]==2)) && gameover==0)
+									{
+
+										console.log("Win");
+										gameover=clicked[2];
+										if(gameover==1)
+										{
+											$("#3").attr('class','glyphicon glyphicon-remove glyphicon-win');
+											$("#5").attr('class','glyphicon glyphicon-remove glyphicon-win');
+											$("#7").attr('class','glyphicon glyphicon-remove glyphicon-win');
+										}
+										else
+										{
+											$("#3").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+											$("#5").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+											$("#7").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+										}
+										if(gameover==1)
+										{
+											console.log("hello");
+											$("#status").text("You Win");
+										}
+										else
+											if(gameover==2){
+												$("#status").text("Bot Wins");
+											}
+										}	
+										if(count==9 && gameover==0)
+										{
+											$("#status").text("Draw");
+										}
+										if(gameover==2)
+										{
+											gameLoop1();
+										}
+										if(gameover==1)
+										{
+											gameLoop2();
+										}
+										if(gameover==1|| gameover==2)
+										{
+			//$("#div-1,#div-2,#div-3,#div-4,#div-5,#div-6,#div-7,#div-8,#div-9").click(false);
+			document.getElementById("div-1").style.pointerEvents = 'none';
+			document.getElementById("div-2").style.pointerEvents = 'none';
+			document.getElementById("div-3").style.pointerEvents = 'none';
+			document.getElementById("div-4").style.pointerEvents = 'none';
+			document.getElementById("div-5").style.pointerEvents = 'none';
+			document.getElementById("div-6").style.pointerEvents = 'none';
+			document.getElementById("div-7").style.pointerEvents = 'none';
+			document.getElementById("div-8").style.pointerEvents = 'none';
+			document.getElementById("div-9").style.pointerEvents = 'none';
+		}
+
+	}
+
+	$(function(){
+		$("#div-1,#div-2,#div-3,#div-4,#div-5,#div-6,#div-7,#div-8,#div-9").click(function(){
+
+			if(count==9 && gameover==0)
+			{
+				$("#status").text("Draw");
+			}
+			if(gameover==2)
+			{
+				gameLoop1();
+			}
+			if(gameover==1)
+			{
+				gameLoop2();
+			}
+			if(gameover==1|| gameover==2)
+			{
+			//$("#div-1,#div-2,#div-3,#div-4,#div-5,#div-6,#div-7,#div-8,#div-9").click(false);
+			document.getElementById("div-1").style.pointerEvents = 'none';
+			document.getElementById("div-2").style.pointerEvents = 'none';
+			document.getElementById("div-3").style.pointerEvents = 'none';
+			document.getElementById("div-4").style.pointerEvents = 'none';
+			document.getElementById("div-5").style.pointerEvents = 'none';
+			document.getElementById("div-6").style.pointerEvents = 'none';
+			document.getElementById("div-7").style.pointerEvents = 'none';
+			document.getElementById("div-8").style.pointerEvents = 'none';
+			document.getElementById("div-9").style.pointerEvents = 'none';
+		}
+	})
+
+
+
+	})
+	document.getElementById("stillApe").addEventListener('click',function()
+	{
+		chance=0;
+		$("#whofirst").css('display','none');
+
+	});
+	document.getElementById("stillRobo").addEventListener('click',function()
+	{
+		chance=1;
+		$("#whofirst").css('display','none');
+		available=[0,1,2,3,4,5,6,7,8];
+		chance=0;
+
+
+		var pick=available[Math.floor(Math.random()*available.length)];
+		clicked[pick]=2;
+		pick+=1;
+		$(("#div-"+pick.toString()).toString()).click();
+		console.log(("#div-"+pick.toString()).toString());
+
+		$(("#"+pick.toString()).toString()).attr('class','glyphicon glyphicon-one-fine-dot red');
+		$(("#"+pick.toString()).toString()).show();
+
+
+	});
+	function playagain(){
+
+		chance=-1;
+
+		for(i=0;i<9;i++)
+			clicked[i]=-1;
+		gameover=0;
+		count=0;
+		$("#whofirst").show();
+		$("#1,#2,#3,#4,#5,#6,#7,#8,#9").css('class','');
+		$("#1,#2,#3,#4,#5,#6,#7,#8,#9").hide();
+		$("#status").text("");
+		document.getElementById("div-1").style.pointerEvents = 'auto';
+		document.getElementById("div-2").style.pointerEvents = 'auto';
+		document.getElementById("div-3").style.pointerEvents = 'auto';
+		document.getElementById("div-4").style.pointerEvents = 'auto';
+		document.getElementById("div-5").style.pointerEvents = 'auto';
+		document.getElementById("div-6").style.pointerEvents = 'auto';
+		document.getElementById("div-7").style.pointerEvents = 'auto';
+		document.getElementById("div-8").style.pointerEvents = 'auto';
+		document.getElementById("div-9").style.pointerEvents = 'auto';
+
+	}
+</script>
+<script type="text/javascript">
+	//Animations
+	//1.Animation for robot
+	var roboimg=new Image();
+	roboimg.src="robot.png";
+	var robocount=0;
+	function sprite (options) {
+		var that = {};
+		that.tickCount = 0,
+		that.ticksPerFrame = options.ticksPerFrame || 0;
+		that.context = options.context;
+		that.width = options.width;
+		that.height = options.height;
+		that.image = options.image;
+		that.framex=options.framex;
+		that.framey=options.framey;
+		that.render= function (){ 
+			that.context.clearRect(0, 0, that.width, that.height);
+			that.context.drawImage(that.image,that.framex*70,that.framey*70,that.width,that.height,0,0,that.width,that.height);};
+			that.update=function() {
+				that.tickCount += 1;
+				if (that.tickCount > that.ticksPerFrame) {
+					that.tickCount = 0;
+					that.framex+=1;
+					if(that.framex==1)
+						robocount+=1;
+					console.log(robocount);
+					if(robocount==5)
+					{
+						window.cancelAnimationFrame(RoboAnim);
+						robocount=0;
+					}
+					if(that.framex>=8)
+					{
+						that.framex=0;
+						if(that.framey>=3) that.framey=0;
+					}
+				}
+			};
+			return that;
+
+		}
+		var canvas=document.getElementById("Animation-robo");
+		var robot=sprite({ context: canvas.getContext("2d"),
+			width: 70,
+			height: 70,
+			framex:0,
+			framey:1,
+			ticksPerFrame:5,
+			image: roboimg
+		});
+		function gameLoop1 () {
+			RoboAnim= window.requestAnimationFrame(gameLoop1);
+			robot.update();
+			robot.render();
+		}
+		robot.render();
+
+		var stillRobo=document.getElementById("stillRobo");
+		var stillRobot=sprite({ context: stillRobo.getContext("2d"),
+			width: 70,
+			height: 70,
+			framex:0,
+			framey:1,
+			ticksPerFrame:5,
+			image: roboimg
+		});
+		stillRobot.render();
+
+		var  Apeimg=new Image();
+		Apeimg.src="Ape.png";
+		var Apecount=0;
+		function sprite2 (options) {
+			var that = {};
+			that.tickCount = 0,
+			that.ticksPerFrame = options.ticksPerFrame || 0;
+			that.context = options.context;
+			that.width = options.width;
+			that.height = options.height;
+			that.image = options.image;
+			that.framex=options.framex;
+			that.framey=options.framey;
+			that.render= function (){ 
+				that.context.clearRect(0, 0, that.width, that.height);
+				that.context.drawImage(that.image,that.framex*70,that.framey*70,that.width,that.height,0,0,that.width,that.height);};
+				that.update=function() {
+					that.tickCount += 1;
+					if (that.tickCount > that.ticksPerFrame) {
+						that.tickCount = 0;
+						that.framex+=1;
+						if(that.framex==1)
+							Apecount+=1;
+						console.log(robocount);
+						if(Apecount==5)
+						{
+							window.cancelAnimationFrame(ApeAnim);
+							Apecount=0;
+						}
+						if(that.framex>=8)
+						{
+							that.framex=0;
+							if(that.framey>=3) that.framey=0;
+						}
+					}
+				};
+				return that;
+
+			}
+			var canvas2=document.getElementById("Animation-ape");
+			var Ape=sprite2({ context: canvas2.getContext("2d"),
+				width: 70,
+				height: 70,
+				framex:0,
+				framey:1,
+				ticksPerFrame:5,
+				image: Apeimg
+			});
+			function gameLoop2 () {
+				ApeAnim= window.requestAnimationFrame(gameLoop2);
+				Ape.update();
+				Ape.render();
+			}
+			Ape.render();	
+			var stillApe=document.getElementById("stillApe");
+			var stillApes=sprite({ context: stillApe.getContext("2d"),
+				width: 70,
+				height: 70,
+				framex:0,
+				framey:1,
+				ticksPerFrame:5,
+				image: Apeimg
+			});
+			stillApes.render();
+
+//For making async bot decisions.
+
+
+</script>
+<p style="font-size: 20px;display: block;margin-left:200px;margin-right: 200px;margin-top:20px">Tired? The computer is surely very smart doing this stuff.In Fact you are not the only one,world’s best chess grand-masters,go grand-masters have lost against computers.You must have read about this somewhere.Ever wondered how they do it?</p>
+<p style="font-size: 30px;display: block;margin-left: 200px;margin-right: 200px;margin-top: 20px;opacity: 0.5">Intuition
+</p>
+<div >
+	<p style="font-size: 20px;display: block;margin-left:200px;margin-right: 200px;margin-top:20px">You must have figured out that computers do not have one straight move that can make them win.It is a 2-player game so computer has to decide which move to take depending on what move you take.This is searching for the right action when two adversaries play and this is what is called as “Adversarial Search”. Seems intimidating, isn’t it? Tell me if it still is after going through our discussion.Let’s start with some examples.<br></br>Consider a board configuration as follows<br></br>
+		It’s your turn to mark next.Where would you mark?
+	</p>
+	<div class="container" style="float:left;margin-left: 800px;margin-top: 100px">
+
+		<div class="row text-center"  >
+			<div class="col-sm-2 padding-0"  id="div-11">
+				<div class="border-bottom border-right" style=" min-height: 93px;" >
+					<span class="glyphicon glyphicon-remove blue " style="font-size: 28px;position: relative;" id="11" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-12">
+
+				<div class="border-bottom border-right" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove blue" style="font-size: 28px;position: relative;" id="12" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-13">
+				<div class="border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="13" "></span>
+				</div>	
+			</div>
+		</div>
+		<div class="row text-center">
+			<div class="col-sm-2 padding-0" id="div-14" >
+				<div class="border-right border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="14" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-15">
+				<div class="border-right border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="15" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-16">
+				<div class="border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove blue" style="font-size: 28px;position: relative;" id="16" "></span>
+				</div>	
+			</div>
+		</div>
+		<div class="row text-center">
+			<div class="col-sm-2 padding-0	"  id="div-17">
+				<div class="border-right" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="17" "></span>
+
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-18">
+				<div class="border-right " style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="18" "></span>
+
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0"  id="div-19">
+				<div style="padding-top:30px;min-height: 93px" >
+					<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="19"></span>
+				</div>	
+			</div>
+		</div>
+
+	</div><div style="float: left;margin-top: 200px">
+	<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;padding-left: 60px" id="19"></span>
+	<p style="font-size: 20px">Available positions
+		<br></br>
+		Click on what you think will be best</p>
+	</div>
+
+</div>
+
+<div style="clear: both;margin-left:750px"><span style="font-size:200%;opacity: 0.5"> Status:</span> <span style="font-size:200%;" id="status2"></span></div>
+
+<script type="text/javascript">
+	$("#div-13").click(function(){
+		$("#status2").text("Yeah you win,obvious move is'nt it");
+
+		$("#11").attr('class','glyphicon glyphicon-remove glyphicon-win');
+		$("#12").attr('class','glyphicon glyphicon-remove glyphicon-win');
+		$("#13").attr('class','glyphicon glyphicon-remove glyphicon-win');
+		$("#div-19").unbind("click");
+		$("#div-13").unbind("click");
+
+	});
+	$("#div-19").click(function(){
+		$("#status2").text("Darn,you lost it.Bot wins.");
+
+		$("#13").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+		$("#15").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+		$("#17").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+		$("#19").addClass('blue');
+		$("#19").removeClass('green');
+		$("#div-19").unbind("click");
+		$("#div-13").unbind("click");
+
+	});
+
+</script>
+
+<p style="font-size: 20px;display: block;margin-left: 200px;margin-right: 200px;margin-top: 20px;">Now let’s consider another board configuration and see which move would you pick.<br>Now again where would you mark?
+
+</p>
+
+<div >
+	<div class="container" style="float:left;margin-left: 800px;margin-top: 100px">
+
+		<div class="row text-center"  >
+			<div class="col-sm-2 padding-0"  id="div-21">
+				<div class="border-bottom border-right" style=" min-height: 93px;" >
+					<span class="glyphicon glyphicon-remove blue " style="font-size: 28px;position: relative;" id="21" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-22">
+
+				<div class="border-bottom border-right" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="22" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-23">
+				<div class="border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="23" "></span>
+				</div>	
+			</div>
+		</div>
+		<div class="row text-center">
+			<div class="col-sm-2 padding-0" id="div-24" >
+				<div class="border-right border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="24" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-25">
+				<div class="border-right border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="25" "></span>
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-26">
+				<div class="border-bottom" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="26" "></span>
+				</div>	
+			</div>
+		</div>
+		<div class="row text-center">
+			<div class="col-sm-2 padding-0	"  id="div-27">
+				<div class="border-right" style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-remove	 green" style="font-size: 28px;position: relative;" id="27" "></span>
+
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0" id="div-28">
+				<div class="border-right " style=" min-height: 93px" >
+					<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="28" "></span>
+
+				</div>	
+			</div>
+			<div class="col-sm-2 padding-0"  id="div-29">
+				<div style="padding-top:30px;min-height: 93px" >
+					<span class="glyphicon glyphicon-remove blue" style="font-size: 28px;position: relative;" id="29"></span>
+				</div>	
+			</div>
+		</div>
+
+	</div><div style="float: left;margin-top: 200px">
+	<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;padding-left: 60px" id="19"></span>
+	<p style="font-size: 20px">Available positions
+		<br></br>
+		Click on what you think will be best</p>
+	</div>
+
+</div>
+<div style="clear: both;margin-left:750px"><span style="font-size:200%;opacity: 0.5"> Status:</span> <span style="font-size:200%;" id="status3"></span></div>
+<p style="font-size: 20px;display: block;margin-left: 200px;margin-right: 200px;margin-top: 20px;">Now let us sit in the opponent’s point of view.For every other move except the last one,It becomes as clear as it was to us in the previous example.The opponent will mark top row middle column and win.So to prevent that you mark at that position and prevent his immediate success.<br>
+	And this what exactly minimax does,it tries to mimic how humans think but to a deeper level with it’s computing ability.</p>
+
+
+	<script type="text/javascript">
+		$("#div-22").click(function(){
+			$("#status3").text("Yay,Right move,you prevented bot from winning.");
+
+			$("#22").addClass('blue');
+			$("#22").removeClass('green');
+			$("#div-22").unbind("click");
+			$("#div-23").unbind("click");
+			$("#div-24").unbind("click");
+			$("#div-26").unbind("click");
+			$("#div-27").unbind("click");
+
+
+
+		});
+		$("#div-23,#div-24,#div-26,#div-27").click(function(){
+			$("#status3").text("Darn,you lost it.Bot wins.");
+
+			$("#22").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+			$("#25").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+			$("#28").attr('class','glyphicon glyphicon-one-fine-dot glyphicon-win');
+			$(this).find("span").addClass('blue');
+			$(this).find("span").removeClass('green');
+
+			$("#div-23,#div-24,#div-26,#div-27,#div-22").unbind("click");
+
+
+
+
+		});
+
+	</script>
+
+
+
+	<p style="font-size: 30px;opacity: 0.5;display: block;margin-left: 200px"> Representation </p>
+
+	<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px"> Seeing our previous example , does it strike a resemblance with any famous data structure? Yes it looks like a graph.
+	</p>
+	<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px"> It does a look like a graph but we have to decide what nodes and edges represent, we have to decide if hierarchy among the nodes in important.Let’s try to think this through.
+		<br>Try to think what the nodes and edges represent and what makes sense.
+	</p>
+	<button onclick="Nodes()" style="display: block;margin-left: 200px;margin-right: 100px;margin-top: 50px" id="Nodesbutton">Nodes- states and edges- actions</button>
+	<p style="font-size: 20px;display: block;margin-left: 300px;margin-top: 30px;margin-right: 200px;display: none" id="Nodes">        Yes,this representation of our games makes sense, i.e an action can map from one input state to one output state.So nodes representing states and edges representing actions is suitable.Now try understand why the other does'nt make sense.</p>
+	<button onclick="Edges()" style="display: block;margin-left: 200px;margin-top: 50px;margin-right: 100px" id="Edgesbutton">Nodes- actions and edges- states 	</button>
+	
+
+	<p style="font-size: 20px;display: block;margin-left: 300px;margin-top: 30px;margin-right: 200px;display: none" id="Edges"> 	     What would our initial level look like, we have one state and have to decide the action ie. we have one edge and to decide the node.There is no initial node.Suppose that we assume that the first node is just a start action node and the edge connected to it is our initial state.Even then,mapping our edge to multiple nodes i.e multiple actions does not make sense here.So try to think why the other makes sense.
+		<script type="text/javascript">
+			$("#Nodesbutton").click(function(){
+				$("#Nodes").css('display','block');
+			})
+			$("#Edgesbutton").click(function(){
+				$("#Edges").css('display','block');
+			})
+
+		</script>
+		<p style="font-size:30px;margin-left:200px;color: red"> Pending Other Representations and intuition to MiniMax</p>
+
+		<p style="font-size: 30px;opacity: 0.5;display: block;margin-left: 200px"> MiniMax </p>
+		<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px">Let’s continue from our previous tic-tac-toe board examples.
+			In the last example except for the last move,all moves clearly showed that opponent would win.Now try to do the same with the following:
+		</p>
+		<div class="container" style="float:left;margin-left: 800px;margin-top: 100px">
+
+			<div class="row text-center"  >
+				<div class="col-sm-2 padding-0"  id="div-31">
+					<div class="border-bottom border-right" style=" min-height: 93px;" >
+						<span class="glyphicon glyphicon-one-fine-dot red " style="font-size: 28px;position: relative;" id="31" "></span>
+					</div>	
+				</div>
+				<div class="col-sm-2 padding-0" id="div-32">
+
+					<div class="border-bottom border-right" style=" min-height: 93px" >
+						<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="32" "></span>
+					</div>	
+				</div>
+				<div class="col-sm-2 padding-0" id="div-33">
+					<div class="border-bottom" style=" min-height: 93px" >
+						<span class="glyphicon glyphicon-remove blue" style="font-size: 28px;position: relative;" id="33" "></span>
+					</div>	
+				</div>
+			</div>
+			<div class="row text-center">
+				<div class="col-sm-2 padding-0" id="div-34" >
+					<div class="border-right border-bottom" style=" min-height: 93px" >
+						<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="34" "></span>
+					</div>	
+				</div>
+				<div class="col-sm-2 padding-0" id="div-35">
+					<div class="border-right border-bottom" style=" min-height: 93px" >
+						<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="35" "></span>
+					</div>	
+				</div>
+				<div class="col-sm-2 padding-0" id="div-36">
+					<div class="border-bottom" style=" min-height: 93px" >
+						<span class="glyphicon glyphicon-remove blue" style="font-size: 28px;position: relative;" id="36" "></span>
+					</div>	
+				</div>
+			</div>
+			<div class="row text-center">
+				<div class="col-sm-2 padding-0	"  id="div-37">
+					<div class="border-right" style=" min-height: 93px" >
+						<span class="glyphicon glyphicon-remove blue" style="font-size: 28px;position: relative;" id="37" "></span>
+
+					</div>	
+				</div>
+				<div class="col-sm-2 padding-0" id="div-38">
+					<div class="border-right " style=" min-height: 93px" >
+						<span class="glyphicon glyphicon-remove green" style="font-size: 28px;position: relative;" id="38" "></span>
+
+					</div>	
+				</div>
+				<div class="col-sm-2 padding-0"  id="div-39">
+					<div style="padding-top:30px;min-height: 93px" >
+						<span class="glyphicon glyphicon-one-fine-dot red" style="font-size: 28px;position: relative;" id="39"></span>
+					</div>	
+				</div>
+			</div>
+		</div>
+		<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px;clear: both">Figured out something?Nothing clear right.What would you do then,go to a random move hoping to win somehow?
+		</p>
+		<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px">Definitely our move is not going to be random,we will just think like we have done previously a bit deeper till we reach terminal nodes where we can decide how the sequence of moves went for the player (good or bad).
+			<br>We will go to the terminal state but how will we propagate signal back to the parent states?A simple way to assign mathematical meaning to winning,losing and draw states. <br>We will go to the terminal state but how will we propagate signal back to the parent states?A simple way to assign mathematical meaning to winning,losing and draw states.<br>Let’s formulate our winning or losing in terms of rewards for the agent we are considering, +1 for our winning(opponent’s losing) , -1 for our losing (opponent’s winning) and 0 for no result.
+		</p>
+		<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px">Let’s try to understand what the MiniMax actually means through this example.
+			Suppose we have to take  decision for the previous example.We have to decide the next X which will be most profitable.
+
+
+			Like before let’s enumerate the possible moves where we can go .
+		</p>
+		<p style="font-size:30px;color:red;margin-left:200px">Pending Implementation ,prototype at <a href="https://docs.google.com/document/d/1_IUxAYsxOLYzIkvejtdmpbqaxYHs1iZt3j5b6-qj5G0/edit"> link </a></p>	
+
+		<div>
+			<div style="float: left">
+
+				<p style="font-size: 30px;opacity: 0.5;display: block;margin-left: 200px"> Problems with MiniMax </p>
+
+				<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px">Let’s see how many nodes we have to traverse in order to decide an action in our game of tic-tac-toe.
+					Let us calculate it to decide the first move.Possible Actions = 9,Moves=9.
+					First Level: 9 Nodes.
+					Second Level: 8 available positions to move.So 9*8=72 nodes in this level.
+					..Final Level: 9*8…*1=9! Nodes.
+					So total nodes to iterate will be in of the order of 10^6.
+					Though a normal computer can simulate it in a very few seconds we have to understand that tic-tac-toe is a very simple game.Games like chess have many many times over the number of moves and actions.
+					<br>
+					See for yourself the order how the number of nodes to iterate changes with the game configuration.
+
+				</p>
+			</div>
+			<div style="float: left;margin-right: 200px" >
+
+
+				<div id="actions" style="margin-left:200px;display: block;float: left;margin-top: 200px;margin-right: 100px	">
+					<p style="font-size:200%;opacity: 0.5"> Number of actions </p>
+					<span  class="TKAdjustableNumber" data-var="actions" data-min="2" data-max="20"  > actions</span>
+				</div>
+				<div id="myDiv" style="width: 300px height:300px;display: block;float: left" style="float:left"></div>
+
+			</div>
+		</div>
+		<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px;clear:both">
+		      MiniMax takes up a lot of time.We can reduce the time if we can stop going through a few nodes which will not affect our final result.Let’s see through an example if it is possible or not.
+</p>
+	<p style="font-size:30px;color:red;margin-left:200px">Pending Implementation of example to show intuition of MiniMax. (in-continuation with MiniMax).</p>
+
+
+
+<p style="font-size: 30px;opacity: 0.5;display: block;margin-left: 200px"> Alpha-beta </p>
+<p style="font-size: 20px;display: block;margin-left: 200px;margin-top: 30px;margin-right: 200px">Formalising the idea,let’s define two parameters Alpha and Beta.<br>
+Alpha- maximum lower bound of possible solutions<br>
+Beta- minimum upper bound of possible solutions<br>
+So following above logic whenever beta <= alpha we can prune the rest of nodes.
+Just like the visualisations for minimax we can represent alpha- beta search also with each state having [alpha,beta] that keeps updating .
+
+</p><p style="font-size:30px;color:red;margin-left:200px">Pending Implementation</p>
+
+<p style="font-size: 30px;opacity: 0.5;display: block;margin-left: 200px"> Time Comparison
+<div style="float: left;margin-right: 200px" >
+
+
+				<div id="actions2" style="margin-left:200px;display: block;float: left;margin-top: 200px;margin-right: 100px	">
+					<p style="font-size:200%;opacity: 0.5"> Number of actions </p>
+					<span  class="TKAdjustableNumber" data-var="actions2" data-min="2" data-max="20"  > actions</span>
+				</div>
+				<div id="myDiv2" style="width: 300px height:300px;display: block;float: left" style="float:left"></div>
+
+			</div>
+
+		<script type="text/javascript">
+			function setUpTangle()
+			{
+				var rootElement = document.getElementById("actions");
+				var model={
+					initialize: function () {
+						this.actions = 3;
+					},update: function(){
+						for(i=0;i<50;i++)
+						{
+							trace1.x[i]=i;
+							trace1.y[i]=Math.pow(this.actions,i);
+
+
+						}
+						var data = [trace1];
+						trace1.line.dash='dashdot';
+						var layout = {
+							width: 500,
+							height: 500,
+							title: 'Time taken by a game with a actions and h moves to complete', 
+							xaxis: {
+								title: 'Number of moves to game complete - h ', 
+								showgrid: false, 
+								zeroline: false
+							}, 
+							yaxis: {
+								title: 'Time in units', 
+								showline: false
+							}
+						};
+
+						Plotly.newPlot('myDiv', data,layout);
+					}
+				}
+
+				var tangle = new Tangle(rootElement, model);
+			}
+
+
+
+
+			var trace1 = {
+				x: [1, 2, 3, 4], 
+				y: [10, 15, 13, 17], 
+				type: 'scatter',
+				line:{
+					dash:'dashdot'
+				},
+
+
+			};
+
+			var data = [trace1];
+			Plotly.newPlot('myDiv', data);
+
+
+
+
+				function setUpTangle2()
+			{
+				var rootElement = document.getElementById("actions2");
+				var model={
+					initialize: function () {
+						this.actions2 = 3;
+					},update: function(){
+						for(i=0;i<10;i++)
+						{
+							trace2.x[i]=i;
+							trace2.y[i]=Math.pow(this.actions2,i);
+							trace3.x[i]=i;
+							trace3.y[i]=Math.pow(this.actions2,i/2);
+
+						}
+						var data = [trace2,trace3];
+						trace2.line.dash='dashdot';
+						var layout = {
+							width: 500,
+							height: 500,
+							title: 'Time taken by a game with a actions and h moves to complete', 
+							xaxis: {
+								title: 'Number of moves to game complete - h ', 
+								showgrid: false, 
+								zeroline: false
+							}, 
+							yaxis: {
+								title: 'Time in units', 
+								showline: false
+							}
+						};
+
+						Plotly.newPlot('myDiv2', data,layout);
+					}
+				}
+
+				var tangle = new Tangle(rootElement, model);
+			}
+
+
+
+
+			var trace2 = {
+				x: [1, 2, 3, 4], 
+				y: [10, 15, 13, 17], 
+				type: 'scatter',
+				line:{
+					dash:'dashdot'
+				},
+				name:'MiniMax'
+
+
+			};
+			var trace3 = {
+				x: [1, 2, 3, 4], 
+				y: [10, 15, 13, 17], 
+				type: 'scatter',
+				line:{
+					dash:'dashdot'
+				},
+				name:'Alpha-beta'
+
+			};
+
+			var data = [trace1];
+			Plotly.newPlot('myDiv', data);
+		</script>
+	</body>
+	</html>
+
